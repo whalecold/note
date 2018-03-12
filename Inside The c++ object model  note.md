@@ -119,7 +119,7 @@
         }
     };
 ```
-+ 上述初始化的顺序是 y - > x -> x （ *initialization list 中的初始化顺序是按照类内的申明顺序 但是他的顺序会排在 explicit user code 之前）* 
++ 上述初始化的顺序是 y - > z -> x （ *initialization list 中的初始化顺序是按照类内的申明顺序 但是他的顺序会排在 explicit user code 之前）* 
 
 ## 第三章 Data语意学
 
