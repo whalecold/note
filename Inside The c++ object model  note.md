@@ -196,3 +196,87 @@ ob.*p2 === ob.x (相当于把指向data memeber的指针重新绑定到class obj
 + 类似的继承类不会影响效率 但是会影响优化效率
 
 ## 第四章 Function语意学
+
+### Member的各种调用方式
+
+##### Nonstatic Member Functions
+
+##### 名称的特殊处理
+
+#####  Virtual Member Functions（虚拟成员函数） 
+
++ 明确的调用实体会比较有效率，并因此压制由于虚拟机制而产生的不必要的重复调用操作
+
+```
+//明确的调用操作会压制虚拟机制
+register float msg = Point3d::magnitude();
+```
+
+##### Static Member Functions (静态成员函数)
+
++ 将会被转换成一般的nonmember 函数调用
++ 不能直接存取class中的nonstatic members  `初始化要比nonstatic members 要早`
++ 不能被声明为 `const`  `volatile` `virtual`
++ 调用的时候不需要 class object
+
+##### Virtual Member Functions（虚拟成员函数）
+
++ 积极多态 
+
+```
+eg : ptr->z() (ptr是个虚基类指针 我姑且这么叫吧)
+	 Point3d *p3d = dynamic_cast<Point3d*>(ptr) （RTTI runtime type identifucation 效率很低 不要用）
+```
+
+要知道怎么才能调用`z()`实体 我们需要知道
+
++ `ptr` 所指对象的真是类型
++ `z()` 实体位置
+
+首先在一个多态的class上加两个members
+
++ 一个字符串或者数字 表示`class`的类型
++ 一个指针 指向表格  _virtual table_
+
+
+###### virtual functions 是如何被构建的：
+
+```
+virtual table 在执行期间是不会有变更的， 所以在编译期间就已经顶好了
+```
+
+一个class只会有一个_virtual table_。每个table 内包含了对应的  `class object` 中所有 `active virtual functions` 函数实体的地址 包括以下:
+
++ class 所定义的函数实体，他会改写一个可能存在的 `base class virtual function`函数实体
++ 继承`base class`的函数实体  在`deruved class`决定不该写`virtual function`时才会出现的。
++ `pure_virtual_called()` 函数实体 既是空间保卫者，也可以作为执行期异常处理函数
+
+```
+这里就可以解释为什么虚类的析构函数必须时virtual的了 算是明白原理了
+```
+##### 多重继承下的virtual Functions(这个有点难懂 trunk 看完后再反回来看看)
+
+###### 主要的困在落在了base2 subobject 身上
+
+[thunk](faculty.stanford.edu/~knuth/taocp.html)  [En](https://en.wikipedia.org/wiki/Thunk)
+
+```
+"只是编写可提供地址的代码的一部分：”，P.Z.Ingerman如是说。他是在1961年发明这个定义的。当时是定义这样一个方法：把实际参数绑定到在Algol-60程序里呼叫到的定义。如果一个程序在被呼叫的时候，用一个表达式占据了形参的位置，那么编译器就会产生一个thunk，这个thunk指的是：计算表达式的地址，然后把这个地址放在适宜的位置。
+```
+
+##### 虚拟继承下的Virtual Functions
+
+```
+建议:不要在virtual bass class 中声明nonstatic data members(会很复杂)
+```
+
+
+
+
+
+
+
+
+
+
+
